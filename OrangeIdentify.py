@@ -7,7 +7,7 @@ img = cv.imread('Imagens/Laranja_1.jpg')
 hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # cv.imshow('HSV', hsv)
 
-h,s,v = cv.split(hsv)
+h, s, v = cv.split(hsv)
 
 cv.imshow('H', h)
 cv.imshow('S', s)
