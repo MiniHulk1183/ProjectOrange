@@ -1,20 +1,17 @@
 import cv2 as cv
 import numpy as np
 
-img = cv.imread('Imagens/Laranja_3.jpg')
-# cv.imshow('Laranjas', img)
+img = cv.imread('Imagens/Laranja_1.jpg')
+cv.imshow('Laranjas', img)
 
 hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-# cv.imshow('HSV', hsv)
+cv.imshow('HSV', hsv)
 
-h,s,v = cv.split(hsv)
+lower = np.array([1, 50, 120])
+upper = np.array([25, 255, 255])
 
-# cv.imshow('H', h)
-# cv.imshow('S', s)
-# cv.imshow('V', v)
-
-mask = cv.inRange(h, 1, 25)
-# cv.imshow('Mask', mask)
+mask = cv.inRange(hsv, lower, upper)
+cv.imshow('Mask', mask)
 
 masked = cv.bitwise_and(img, img, mask=mask)
 cv.imshow('Final', masked)
