@@ -8,13 +8,14 @@ Original file is located at
 """
 
 from google.colab import output
-#I don't know why nbextensions don't work with python3.6 
+# I don't know why nbextensions don't work with python3.6
 with output.temporary():
-  !pip install --upgrade git+https://github.com/Kreijstal/colab_inspector.git 
-  !python2.7 -m pip install --upgrade git+https://github.com/blois/colab_inspector.git #yes, really.
-  !jupyter nbextension install --py inspector
+    !pip install - -upgrade git+https: // github.com/Kreijstal/colab_inspector.git
+    # yes, really.
+    !python2.7 - m pip install - -upgrade git+https: // github.com/blois/colab_inspector.git
+    !jupyter nbextension install - -py inspector
 
-import inspector
+# import inspector
 
 
 import cv2 as cv
@@ -22,66 +23,81 @@ import matplotlib.pyplot as plt
 import numpy as np
 from google.colab.patches import cv2_imshow
 
-cv.destroyAllWindows()
+n_da_img = 1
 
-#img = cv.imread('./laranjeira_15.jpg')
-img = cv.imread('./Laranjeiras_26.jpg')
-cv2_imshow(img)
+for x in range(1, 35):
 
-##Blurring filters
-kX = 5
-kY = 5
-blurred = cv.GaussianBlur(img, (kX, kY), 0)
-#blurred = cv.blur(img,(kX, kY))
-#blurred = cv.medianBlur(img,3)
-cv2_imshow(blurred)
+    path = '/content/laranjeira_' + str(n_da_img) + '.jpg'
+    cv.destroyAllWindows()
 
-hsv = cv.cvtColor(blurred, cv.COLOR_BGR2HSV)
-#cv2_imshow(hsv)
+    # print(path)
 
-lower = np.array([1, 50, 120])
-upper = np.array([25, 255, 255])
+    #img = cv.imread('./laranjeira_15.jpg')
+    img = cv.imread(path)
 
-mask = cv.inRange(hsv, lower, upper)
-#cv2_imshow(mask)
+    # Blurring filters
+    kX = 7
+    kY = 7
 
-masked = cv.bitwise_and(img, img, mask=mask)
-#cv2_imshow(masked)
+    blurred = cv.GaussianBlur(img, (kX, kY), 0)
+    #blurred = cv.blur(img,(kX, kY))
+    #blurred = cv.medianBlur(img,3)
+    # cv2_imshow(blurred)
 
-canny = cv.Canny(mask, 150, 175)
-print('Canny')
-cv2_imshow(canny)
+    hsv = cv.cvtColor(blurred, cv.COLOR_BGR2HSV)
+    # cv2_imshow(hsv)
 
-#Contours###########
+    lower = np.array([1, 50, 120])
+    upper = np.array([25, 255, 255])
 
-blank = np.zeros(img.shape, dtype='uint8')
-contours, hierarchies = cv.findContours(canny, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-#print(f'{contours[8]} contour(s) found!')
-#print(np.size(contours[8]))
-print(len(contours))
+    mask = cv.inRange(hsv, lower, upper)
+    # cv2_imshow(mask)
 
-aux=0
-length_contours = np.zeros(len(contours))
-for cont in contours:
-  length_contours[aux]=np.size(cont)/2
-  aux+=1
+    masked = cv.bitwise_and(img, img, mask=mask)
+    # cv2_imshow(masked)
 
-maxium_num_points = np.max(length_contours) #maximum number of point in each identified contour
-mean_num_points = np.mean(length_contours)
-std_points = np.std(length_contours)
-print("Maximum value: " + str(np.max(length_contours)))
-print("Mean: " + str(np.mean(length_contours)))
-print("Standard deviation: " + str(std_points))
+    canny = cv.Canny(mask, 150, 175)
+    # print('Canny')
+    # cv2_imshow(canny)
 
-aux=0
-naranjas=0
-thresholdi=(mean_num_points+3*(std_points)) #Two/Three standard deviations (µ ± 2σ) empirical rule
-print("Threshold de comprimento do contorno: " + str(thresholdi))
-for cont in contours:
-  if length_contours[aux] > thresholdi:
-    cv.drawContours(blank, cont, -1, (0,0,255), 3)
-    naranjas+=1
-  aux+=1
+    #Contours###########
 
-cv2_imshow(blank)
-cv2_imshow(img)
+    blank = np.zeros(img.shape, dtype='uint8')
+    contours, hierarchies = cv.findContours(
+        canny, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    #print(f'{contours[8]} contour(s) found!')
+    # print(np.size(contours[8]))
+    # print(len(contours))
+
+    aux = 0
+    length_contours = np.zeros(len(contours))
+    for cont in contours:
+        length_contours[aux] = np.size(cont)/2
+        aux += 1
+
+    # maximum number of point in each identified contour
+    maxium_num_points = np.max(length_contours)
+    mean_num_points = np.mean(length_contours)
+    std_points = np.std(length_contours)
+    #print("Maximum value: " + str(np.max(length_contours)))
+    #print("Mean: " + str(np.mean(length_contours)))
+    #print("Standard deviation: " + str(std_points))
+
+    aux = 0
+    naranjas = 0
+    # Two/Three standard deviations (µ ± 2σ) empirical rule
+    thresholdi = (mean_num_points+1*(std_points))
+    #print("Threshold de comprimento do contorno: " + str(thresholdi))
+    for cont in contours:
+        if length_contours[aux] > thresholdi:
+            cv.drawContours(blank, cont, -1, (0, 0, 255), 3)
+            naranjas += 1
+        aux += 1
+
+    # cv2_imshow(blank)
+    # cv2_imshow(img)
+
+    print('larajeira_'+str(n_da_img))
+    print('Total de laranjas ' + str(naranjas)+'\n')
+
+    n_da_img += 1
